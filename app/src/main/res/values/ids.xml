@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="checkBox18" type="id" />
+    <item name="editTextTextPersonName5" type="id" />
+    <item name="checkBox20" type="id" />
+    <item name="editTextTextPersonName2" type="id" />
+    <item name="checkBox19" type="id" />
+    <item name="checkBox17" type="id" />
+    <item name="checkBox12" type="id" />
+    <item name="editTextTextPersonName6" type="id" />
+    <item name="checkBox14" type="id" />
+    <item name="checkBox13" type="id" />
+    <item name="checkBox11" type="id" />
+    <item name="editTextTextPersonName4" type="id" />
+    <item name="button" type="id" />
+    <item name="PreferenceBackButton" type="id" />
+    <item name="editTextTextPersonName7" type="id" />
+    <item name="editTextTextPersonName8" type="id" />
+</resources>
