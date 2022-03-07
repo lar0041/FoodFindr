@@ -1,5 +1,4 @@
 package com.example.foodfindr;
-//
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
