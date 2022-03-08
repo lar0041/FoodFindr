@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
         Connection conn = null;
         String ConnURL = null;
+
         try {
             Class.forName("net.sourceforge.jtds.jdbc.Driver");
             ConnURL = "jdbc:jtds:sqlserver://foodfindr.database.windows.net:1433;DatabaseName=FoodFindr;user=FoodFindr@foodfindr;password=cs430Group6;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
