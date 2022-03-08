@@ -20,4 +20,8 @@
     <string name="do_you_have_food_allergies">Do you have food allergies?</string>
     <string name="food_you_like">Food you like?</string>
     <string name="do_you_have_diet_restructions">Do you have diet restructions?</string>
+    <string name="burger">Burger</string>
+    <string name="salam_restaurant">Salam Restaurant</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
 </resources>
