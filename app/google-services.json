@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "577117366487",
+    "project_id": "foodfindr-b5288",
+    "storage_bucket": "foodfindr-b5288.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:577117366487:android:6590c54d764d2b3dafe892",
+        "android_client_info": {
+          "package_name": "com.example.foodfindr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "577117366487-0t0fhrsrdlg6f49bfd74b7n3c5j7257b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM9ey4DFCFMCXPxLALY-zrbpJfEGJrqIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "577117366487-0t0fhrsrdlg6f49bfd74b7n3c5j7257b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
