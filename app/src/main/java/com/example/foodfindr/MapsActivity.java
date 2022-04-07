@@ -3,125 +3,124 @@ package com.example.foodfindr;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import com.google.android.gms.location.LocationRequest;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Service;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+
+import net.sourceforge.jtds.jdbc.Support;
 
 public class MapsActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed, tv_sensor, tv_updates, tv_address;
-    Switch sw_locationupdates, sw_gps;
-    FusedLocationProviderClient fusedLocationProviderClient;
+    private static final String TAG = "MapsActivity";
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
+    private static final float DEFAULT_ZOOM = 15;
 
-
-    boolean updateOn = false;//do we have permission to get location
-    LocationRequest locationRequest;
+    private Boolean mLocationPermissionGranted = false;
+    private GoogleMap mMap;
+    private FusedLocationProviderClient mFusedLocationProviderCient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getLocationPermission();
+    }
 
-//        // Initialize the SDK
-//        String apiKey = "AIzaSyCd5wEl_VZY3SlaqDZAwNm832BAD0iZnXk";
-//        Places.initialize(getApplicationContext(), apiKey);
+    private void getDeviceLocation(){
+        Log.d(TAG, "getDeviceLocation: getting the devices current location");
+        mFusedLocationProviderCient = LocationServices.getFusedLocationProviderClient(this);
+        try{
+            if(mLocationPermissionGranted){
+                Task location = mFusedLocationProviderCient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: found location");
+                            Location currentLocation = (Location) task.getResult();
+                            moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), DEFAULT_ZOOM);
+                        }else{
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }catch (SecurityException e){
+            Log.d(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
+    }
 
+    private void moveCamera(LatLng latlng, float zoom){
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latlng.latitude + ", lng: " + latlng.longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, zoom));
+    }
 
-
-        tv_lat = findViewById(R.id.tv_lat);
-        tv_lon = findViewById(R.id.tv_lon);
-        tv_altitude = findViewById(R.id.tv_altitude);
-        tv_accuracy = findViewById(R.id.tv_accuracy);
-        tv_speed = findViewById(R.id.tv_speed);
-        tv_sensor = findViewById(R.id.tv_sensor);
-        tv_updates = findViewById(R.id.tv_updates);
-        tv_address = findViewById(R.id.tv_address);
-        sw_gps = findViewById(R.id.sw_gps);
-        sw_locationupdates = findViewById(R.id.sw_locationsupdates);
-
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(30000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        sw_gps.setOnClickListener(new View.OnClickListener() {
+    private void initMap(){
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onClick(View v) {
-                if (sw_gps.isChecked()) {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    tv_sensor.setText("Using GPS sensors");
-                } else {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-                    tv_sensor.setText(("Using Towers + WIFI"));
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+                Toast.makeText(MapsActivity.this, "Map is Ready", Toast.LENGTH_SHORT).show();
+                mMap = googleMap;
+                if(mLocationPermissionGranted){
+                    getDeviceLocation();
                 }
             }
         });
-        updateGPS();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSIONS_FINE_LOCATION:
-                ;
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    updateGPS();
-                } else {
-                    Toast.makeText(this, "This app requires permission to be granted in order to work properly", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                break;
+    private void getLocationPermission(){
+        Toast.makeText(MapsActivity.this, "getP is Ready", Toast.LENGTH_SHORT).show();
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        if(ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            if(ContextCompat.checkSelfPermission(this.getApplicationContext(), COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                mLocationPermissionGranted = true;
+                initMap();
+            }else{
+                ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        }else{
+            ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
 
-    private void updateGPS() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //we have permission
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    updateUIValues(location);
+    public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+        mLocationPermissionGranted = false;
+        switch(requestCode){
+            case LOCATION_PERMISSION_REQUEST_CODE:{
+                if(grantResults.length>0){
+                    for(int i = 0; i < grantResults.length; i++){
+                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
+                            mLocationPermissionGranted = false;
+                            return;
+                        }
+                    }
+                    mLocationPermissionGranted = true;
+                    initMap();
                 }
-            });
-        } else {
-            //request
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_FINE_LOCATION);
             }
         }
     }
 
-    private void updateUIValues(Location location) {
-        tv_lat.setText(String.valueOf(location.getLatitude()));
-        tv_lon.setText(String.valueOf(location.getLongitude()));
-        tv_accuracy.setText(String.valueOf(location.getAccuracy()));
-        if (location.hasAltitude()) {
-            tv_altitude.setText((String.valueOf(location.getAltitude())));
-        } else {
-            tv_altitude.setText("Not Available");
-        }
-        tv_speed.setText("dont care");
-    }
 }
