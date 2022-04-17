@@ -27,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
         Context context;
 
 
-        //configureMapButton();
-        //configureLoginButton();
-        //configurePreferencesButton();
+        configureMapButton();
+        configureLoginButton();
+        configurePreferencesButton();
     }
 
     private void show() {
