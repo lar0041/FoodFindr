@@ -8,9 +8,12 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -24,8 +27,26 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
 import net.sourceforge.jtds.jdbc.Support;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -71,9 +92,27 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    private void geoLocate(){
+        Log.d(TAG, "geolocate: geolocating");
+        String searchString = "restaurant";
+        Geocoder geocoder = new Geocoder(MapsActivity.this);
+        List<Address> list = new ArrayList<>();
+        try{
+            list = geocoder.getFromLocationName(searchString, 30);
+        }catch(IOException e){
+            Log.e(TAG, "geolocate: IOException: " + e.getMessage());
+        }
+        for(Address address: list){
+            Log.e(TAG, "wowie");
+            Log.d(TAG, "geoLocate: found a location: " + address.toString());
+        }
+    }
+
     private void moveCamera(LatLng latlng, float zoom) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latlng.latitude + ", lng: " + latlng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, zoom));
+        //geoLocate();
+        findRestaurants(latlng);
     }
 
     private void initMap() {
@@ -127,4 +166,18 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    public void findRestaurants(LatLng latlng){
+//        StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/output?parameters");
+        StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        stringBuilder.append("&location="+latlng.latitude+","+latlng.longitude);
+        stringBuilder.append("&radius="+1000);
+        stringBuilder.append("&keyword="+"restaurant");
+        stringBuilder.append("&key=AIzaSyCd5wEl_VZY3SlaqDZAwNm832BAD0iZnXk");
+        String url = stringBuilder.toString();
+        Object dataTransfer[] = new Object[2];
+        dataTransfer[0] = mMap;
+        dataTransfer[1] = url;
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+        getNearbyPlaces.execute(dataTransfer);
+    }
 }
