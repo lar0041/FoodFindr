@@ -13,7 +13,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -84,6 +86,8 @@ public class MapsActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MapsActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
                         }
+//                        String recommendation = MachineLearner.getRecommendation();
+//                        geoLocate(recommendation);
                     }
                 });
             }
@@ -92,9 +96,8 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
-    private void geoLocate(){
+    public void geoLocate(String searchString){
         Log.d(TAG, "geolocate: geolocating");
-        String searchString = "restaurant";
         Geocoder geocoder = new Geocoder(MapsActivity.this);
         List<Address> list = new ArrayList<>();
         try{
@@ -103,7 +106,6 @@ public class MapsActivity extends AppCompatActivity {
             Log.e(TAG, "geolocate: IOException: " + e.getMessage());
         }
         for(Address address: list){
-            Log.e(TAG, "wowie");
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
         }
     }
@@ -167,7 +169,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     public void findRestaurants(LatLng latlng){
-//        StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/output?parameters");
         StringBuilder stringBuilder = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         stringBuilder.append("&location="+latlng.latitude+","+latlng.longitude);
         stringBuilder.append("&radius="+1000);
@@ -180,4 +181,5 @@ public class MapsActivity extends AppCompatActivity {
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
         getNearbyPlaces.execute(dataTransfer);
     }
+
 }
