@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">FoodFindr</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="rice_and_chicken">Rice and Chicken</string>
+    <string name="sushi">Sushi</string>
+    <string name="pizza">Pizza</string>
+    <string name="texas_road_house">Texas Road house</string>
+    <string name="fujiyama">Fujiyama</string>
+    <string name="burger_king">Burger King</string>
+    <string name="restaurants_you_like">Restaurants you like?</string>
+    <string name="do_you_have_food_allergies">Do you have food allergies?</string>
+    <string name="food_you_like">Food you like?</string>
+    <string name="do_you_have_diet_restructions">Do you have diet restructions?</string>
+    <string name="burger">Burger</string>
+    <string name="salam_restaurant">Salam Restaurant</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+</resources>
