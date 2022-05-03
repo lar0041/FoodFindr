@@ -15,7 +15,7 @@
         android:layout_width="109dp"
         android:layout_height="100dp"
         android:layout_margin="30dp"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@drawable/ic_baseline_food_bank_24" />
 
     <EditText
         android:id="@+id/username"
